@@ -18,19 +18,11 @@ class _QuizPageState extends State<QuizPage> {
     Colors.red,
     Colors.green
   ];
-  Color? optionColor;
-//цвет правильного индекса green
-//и цвет выбранного индекса, если он совпадает с правильным - green,
-// если не совпадает - red,
-// в остальных случаях - amber
-  // void checkAnswer() {
-  //   print('isAnswered = $isAnswered');
-  //   isAnswered = true;
-  //   optionColor =
-  //       _valueType == questions[currentQuestionIndex].correctAnswerIndex
-  //           ? Colors.green
-  //           : Colors.red;
-  // }
+  Color? aktiveColor;
+  void checkAnswer() {
+    print('_correctOption = $_correctOption');
+    isAnswered = true;
+  }
 
   int? _valueType;
   bool? _correctOption;
@@ -68,28 +60,30 @@ class _QuizPageState extends State<QuizPage> {
                       controlAffinity: ListTileControlAffinity.trailing,
                       value: index,
                       groupValue: _valueType,
-                      onChanged: (val) => setState(() {
-                            _valueType = val!;
-                            //val! as int;
-                            _valueType ==
-                                    questions[currentQuestionIndex]
-                                        .correctAnswerIndex
-                                ? _correctOption = true
-                                : _correctOption = false;
-                            print(_valueType);
-                            print(_correctOption);
-                          }),
-                      activeColor: index ==
-                              questions[currentQuestionIndex].correctAnswerIndex
-                          ? Colors.green
-                          : Colors.red);
+                      onChanged: (val) {
+                        setState(() {
+                          _valueType = val;
+                          if (_valueType ==
+                              questions[currentQuestionIndex]
+                                  .correctAnswerIndex) {
+                            aktiveColor = Colors.green;
+                            _correctOption = true;
+                          } else {
+                            aktiveColor = Colors.red;
+                            _correctOption = false;
+                          }
+                        });
+                      },
+                      activeColor: aktiveColor);
                 },
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                isAnswered = true;
+                if (_valueType != null) {
+                  checkAnswer();
+                }
               },
               child: const Text(
                 "Submit",
