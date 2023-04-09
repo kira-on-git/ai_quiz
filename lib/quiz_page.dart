@@ -10,7 +10,6 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  int selectedIndex = -1;
   bool isAnswered = false;
   int currentQuestionIndex = 0;
   List<Color> optionColors = [
@@ -19,21 +18,17 @@ class _QuizPageState extends State<QuizPage> {
     Colors.red,
     Colors.green
   ];
-
-  void checkAnswer(int selectedIndex) {
-    setState(() {
-      isAnswered = true;
-      if (selectedIndex == questions[currentQuestionIndex].correctAnswerIndex) {
-        optionColors[selectedIndex] = optionColors[3];
-      } else {
-        optionColors[selectedIndex] = optionColors[2];
-        optionColors[questions[currentQuestionIndex].correctAnswerIndex] =
-            Colors.purple;
-      }
-    });
+  Color? optionColor;
+//цвет правильного индекса green
+//и цвет выбранного индекса, если он совпадает с правильным - green,
+// если не совпадает - red,
+// в остальных случаях - amber
+  void checkAnswer() {
+    print('seledtedIndex = ');
   }
 
   int? _valueType;
+  bool? _correctOption;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,9 +67,10 @@ class _QuizPageState extends State<QuizPage> {
                       //val! as int;
                       _valueType ==
                               questions[currentQuestionIndex].correctAnswerIndex
-                          ? print('RICHTIG!')
-                          : print('FALSCH!');
+                          ? _correctOption = true
+                          : _correctOption = false;
                       print(_valueType);
+                      print(_correctOption);
                     }),
                     activeColor: Colors.purple, //optionColors[index],
                   );
@@ -83,7 +79,7 @@ class _QuizPageState extends State<QuizPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () => checkAnswer(),
               child: const Text(
                 "Submit",
                 style: TextStyle(fontSize: 18),

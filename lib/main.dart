@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'quiz_page.dart';
-import 'radio_liste.dart';
 
 void main() {
   runApp(const MyApp());
