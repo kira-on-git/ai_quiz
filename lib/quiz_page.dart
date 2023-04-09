@@ -12,6 +12,7 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   bool isAnswered = false;
   int currentQuestionIndex = 0;
+  int score = 0;
   List<Color> optionColors = [
     Colors.red,
     Colors.green,
@@ -20,39 +21,66 @@ class _QuizPageState extends State<QuizPage> {
   int? selectedOptionIndex;
   Color? aktiveColor;
   // bool isCorrectAnswerSelected = false;
-  String buttonName = 'SUBMIT';
+  // String buttonName = 'SUBMIT';
 
   void checkAnswer() {
-    isAnswered = !isAnswered;
-
     setState(() {
       if (selectedOptionIndex ==
           questions[currentQuestionIndex].correctAnswerIndex) {
         aktiveColor = optionColors[1];
+        score += 25;
       } else {
         aktiveColor = optionColors[0];
+        score -= 5;
       }
+      isAnswered = !isAnswered;
     });
-    // if (selectedOptionIndex ==
-    //     questions[currentQuestionIndex].correctAnswerIndex) {
-    //   setState(() {
-    //     aktiveColor = optionColors[1];
-    //     // isCorrectAnswerSelected = true;
-    //     isAnswered = true;
-    //   });
-    // } else {
-    //   setState(() {
-    //     aktiveColor = optionColors[0];
-    //     // isCorrectAnswerSelected = false;
-    //     isAnswered = true;
-    //   });
-    // }
-    isAnswered ? buttonName = "NEXT" : buttonName = "SUBMIT";
-    print('Radio gesperrt = $isAnswered');
+
+    // isAnswered ? buttonName = "NEXT" : buttonName = "SUBMIT";
+
+    print('isAnswered = $isAnswered');
   }
 
-  // int? _valueType;
-  // bool? _correctOption;
+  void goToNextQuestion() {
+    setState(() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        selectedOptionIndex = null;
+        isAnswered = false;
+        aktiveColor = null; // Rücksetzung der aktiven Farbe
+      }
+    });
+    print('currentQuestionIndex = $currentQuestionIndex');
+  }
+// void showScore() {
+//     int numCorrectAnswers = 0;
+//     int numIncorrectAnswers = 0;
+//     for (int i = 0; i < questions.length; i++) {
+//       int? selectedAnswerIndex = selectedAnswerIndexes[i];
+//       if (selectedAnswerIndex != null) {
+//         if (selectedAnswerIndex == questions[i].correctAnswerIndex) {
+//           numCorrectAnswers++;
+//         } else {
+//           numIncorrectAnswers++;
+//         }
+//       }
+//     }
+
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text("Score"),
+//         content: Text("You answered $numCorrectAnswers questions correctly and $numIncorrectAnswers questions incorrectly. Your score is $score."),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context),
+//             child: Text("OK"),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,6 +114,8 @@ class _QuizPageState extends State<QuizPage> {
                       ),
                       controlAffinity: ListTileControlAffinity.trailing,
                       value: index,
+                      //tileColor: Colors.amber,
+                      //selectedTileColor: Colors.deepOrange,
                       groupValue: selectedOptionIndex,
                       onChanged: (val) {
                         isAnswered
@@ -101,15 +131,29 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                checkAnswer();
-              },
-              child: Text(
-                buttonName,
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    checkAnswer();
+                  },
+                  child: const Text(
+                    "SUBMIT",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    goToNextQuestion();
+                  },
+                  child: const Text(
+                    'NEXT',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
