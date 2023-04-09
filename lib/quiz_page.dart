@@ -13,27 +13,31 @@ class _QuizPageState extends State<QuizPage> {
   bool isAnswered = false;
   int currentQuestionIndex = 0;
   List<Color> optionColors = [
-    Colors.grey,
-    Colors.amber,
     Colors.red,
-    Colors.green
+    Colors.green,
+    Colors.purple,
   ];
   int? selectedOptionIndex;
   Color? aktiveColor;
+  // bool isCorrectAnswerSelected = false;
+  String buttonName = 'SUBMIT';
+
   void checkAnswer() {
-    if (selectedOptionIndex == null) {
-      return; // Stop if no option is selected
-    }
     if (selectedOptionIndex ==
         questions[currentQuestionIndex].correctAnswerIndex) {
-      aktiveColor = Colors.green;
+      setState(() {
+        aktiveColor = optionColors[1];
+        // isCorrectAnswerSelected = true;
+        isAnswered = true;
+      });
     } else {
-      aktiveColor = Colors.red;
+      setState(() {
+        aktiveColor = optionColors[0];
+        // isCorrectAnswerSelected = false;
+        isAnswered = true;
+      });
     }
-    print('selectedOptionIndex = $selectedOptionIndex');
-    setState(() {
-      isAnswered = true;
-    });
+    print('Radio gesperrt = $isAnswered');
   }
 
   // int? _valueType;
@@ -65,35 +69,23 @@ class _QuizPageState extends State<QuizPage> {
                 itemBuilder: (BuildContext context, int index) {
                   /*** RADIO ***/
                   return RadioListTile(
-                    title: Text(
-                      questions[currentQuestionIndex].answers[index],
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    value: index,
-                    groupValue: selectedOptionIndex,
-                    onChanged: (val) => setState(() {
-                      selectedOptionIndex = val as int?;
-                    }),
-                    activeColor: selectedOptionIndex ==
-                            questions[currentQuestionIndex].correctAnswerIndex
-                        ? Colors.green
-                        : Colors.red,
-                    secondary: isAnswered
-                        ? Icon(
-                            index ==
-                                    questions[currentQuestionIndex]
-                                        .correctAnswerIndex
-                                ? Icons.check
-                                : Icons.close,
-                            color: index ==
-                                    questions[currentQuestionIndex]
-                                        .correctAnswerIndex
-                                ? Colors.green
-                                : Colors.red,
-                          )
-                        : null,
-                  );
+                      title: Text(
+                        questions[currentQuestionIndex].answers[index],
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      value: index,
+                      groupValue: selectedOptionIndex,
+                      onChanged: (val) {
+                        isAnswered
+                            ? null
+                            : setState(() {
+                                selectedOptionIndex = val;
+                                print(
+                                    'selectedOptionIndex = $selectedOptionIndex');
+                              });
+                      },
+                      activeColor: aktiveColor);
                 },
               ),
             ),
@@ -102,8 +94,8 @@ class _QuizPageState extends State<QuizPage> {
               onPressed: () {
                 checkAnswer();
               },
-              child: const Text(
-                "Submit",
+              child: Text(
+                buttonName,
                 style: TextStyle(fontSize: 18),
               ),
             ),
