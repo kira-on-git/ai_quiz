@@ -1,131 +1,113 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: avoid_print
 
 import 'question_bank.dart';
 
-class QuizPage extends StatefulWidget {
-  const QuizPage({super.key});
+import 'package:flutter/material.dart';
 
+class QuizPage extends StatefulWidget {
   @override
   _QuizPageState createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
+  int selectedIndex = -1;
+  bool isAnswered = false;
   int currentQuestionIndex = 0;
-  int score = 0;
-  List<int?> selectedAnswerIndexes =
-      List.generate(questions.length, (_) => null);
+  List<Color> optionColors = [
+    Colors.grey,
+    Colors.amber,
+    Colors.red,
+    Colors.green
+  ];
 
-  void submitAnswer() {
-    int? selectedAnswerIndex = selectedAnswerIndexes[currentQuestionIndex];
-    if (selectedAnswerIndex != null) {
-      if (selectedAnswerIndex ==
-          questions[currentQuestionIndex].correctAnswerIndex) {
-        score += 10;
+  void checkAnswer(int selectedIndex) {
+    setState(() {
+      isAnswered = true;
+      if (selectedIndex == questions[currentQuestionIndex].correctAnswerIndex) {
+        optionColors[selectedIndex] = optionColors[3];
       } else {
-        score -= 5;
+        optionColors[selectedIndex] = optionColors[2];
+        optionColors[questions[currentQuestionIndex].correctAnswerIndex] =
+            Colors.purple;
       }
-    }
+    });
   }
 
-  void goToNextQuestion() {
-    if (currentQuestionIndex < questions.length - 1) {
-      currentQuestionIndex++;
-    }
-  }
-
-  void showScore() {
-    int numCorrectAnswers = 0;
-    int numIncorrectAnswers = 0;
-    for (int i = 0; i < questions.length; i++) {
-      int? selectedAnswerIndex = selectedAnswerIndexes[i];
-      if (selectedAnswerIndex != null) {
-        if (selectedAnswerIndex == questions[i].correctAnswerIndex) {
-          numCorrectAnswers++;
-        } else {
-          numIncorrectAnswers++;
-        }
-      }
-    }
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Score"),
-        content: Text(
-            "You answered $numCorrectAnswers questions correctly and $numIncorrectAnswers questions incorrectly. Your score is $score."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("OK"),
-          ),
-        ],
+  int? _valueType;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Quiz"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              "Question ${currentQuestionIndex + 1} of ${questions.length}",
+              style: const TextStyle(fontSize: 22),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              questions[currentQuestionIndex].question,
+              style: const TextStyle(fontSize: 22),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: questions[currentQuestionIndex].answers.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return RadioListTile(
+                    title: Text(
+                      questions[currentQuestionIndex].answers[index],
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    controlAffinity: ListTileControlAffinity.trailing,
+                    value: index,
+                    groupValue: _valueType,
+                    onChanged: (val) => setState(() {
+                      _valueType = val!;
+                      //val! as int;
+                      _valueType ==
+                              questions[currentQuestionIndex].correctAnswerIndex
+                          ? print('RICHTIG!')
+                          : print('FALSCH!');
+                      print(_valueType);
+                    }),
+                    activeColor: Colors.purple, //optionColors[index],
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {},
+              child: const Text(
+                "Submit",
+                style: TextStyle(fontSize: 18),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
 
+class ScorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Question currentQuestion = questions[currentQuestionIndex];
-
-    List<Widget> answerButtons = [];
-    for (int i = 0; i < currentQuestion.answers.length; i++) {
-      answerButtons.add(
-        Padding(
-          padding: EdgeInsets.symmetric(vertical: 4),
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                selectedAnswerIndexes[currentQuestionIndex] = i;
-              });
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                selectedAnswerIndexes[currentQuestionIndex] == i
-                    ? i == currentQuestion.correctAnswerIndex
-                        ? Colors.green
-                        : Colors.red
-                    : Colors.blue,
-              ),
-            ),
-            child: Text(currentQuestion.answers[i]),
-          ),
-        ),
-      );
-    }
-/*** QUIZ BODY ***/
+    int score = ModalRoute.of(context)!.settings.arguments as int;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Quiz"),
+        title: Text("Score"),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            /*** QUESTION ***/
-            Text(
-              "Question ${currentQuestionIndex + 1}/${questions.length}: ${currentQuestion.question}",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            /*** ANSWERS ***/
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: answerButtons,
-            ),
-            ElevatedButton(
-              onPressed: submitAnswer,
-              child: Text("Submit"),
-            ),
-            currentQuestionIndex == questions.length - 1
-                ? ElevatedButton(
-                    onPressed: showScore,
-                    child: Text("Score"),
-                  )
-                : ElevatedButton(
-                    onPressed: goToNextQuestion,
-                    child: Text("Next"),
-                  ),
-          ],
+      body: Center(
+        child: Text(
+          "You scored $score points!",
+          style: TextStyle(fontSize: 24),
         ),
       ),
     );

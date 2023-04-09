@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'quiz_page.dart';
+import 'radio_liste.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +12,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const QuizPage(),
-    );
+        title: 'Quiz App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => QuizPage(),
+        });
   }
 }
