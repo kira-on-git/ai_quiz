@@ -18,14 +18,26 @@ class _QuizPageState extends State<QuizPage> {
     Colors.red,
     Colors.green
   ];
+  int? selectedOptionIndex;
   Color? aktiveColor;
   void checkAnswer() {
-    print('_correctOption = $_correctOption');
-    isAnswered = true;
+    if (selectedOptionIndex == null) {
+      return; // Stop if no option is selected
+    }
+    if (selectedOptionIndex ==
+        questions[currentQuestionIndex].correctAnswerIndex) {
+      aktiveColor = Colors.green;
+    } else {
+      aktiveColor = Colors.red;
+    }
+    print('selectedOptionIndex = $selectedOptionIndex');
+    setState(() {
+      isAnswered = true;
+    });
   }
 
-  int? _valueType;
-  bool? _correctOption;
+  // int? _valueType;
+  // bool? _correctOption;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,37 +65,42 @@ class _QuizPageState extends State<QuizPage> {
                 itemBuilder: (BuildContext context, int index) {
                   /*** RADIO ***/
                   return RadioListTile(
-                      title: Text(
-                        questions[currentQuestionIndex].answers[index],
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      controlAffinity: ListTileControlAffinity.trailing,
-                      value: index,
-                      groupValue: _valueType,
-                      onChanged: (val) {
-                        setState(() {
-                          _valueType = val;
-                          if (_valueType ==
-                              questions[currentQuestionIndex]
-                                  .correctAnswerIndex) {
-                            aktiveColor = Colors.green;
-                            _correctOption = true;
-                          } else {
-                            aktiveColor = Colors.red;
-                            _correctOption = false;
-                          }
-                        });
-                      },
-                      activeColor: aktiveColor);
+                    title: Text(
+                      questions[currentQuestionIndex].answers[index],
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    controlAffinity: ListTileControlAffinity.trailing,
+                    value: index,
+                    groupValue: selectedOptionIndex,
+                    onChanged: (val) => setState(() {
+                      selectedOptionIndex = val as int?;
+                    }),
+                    activeColor: selectedOptionIndex ==
+                            questions[currentQuestionIndex].correctAnswerIndex
+                        ? Colors.green
+                        : Colors.red,
+                    secondary: isAnswered
+                        ? Icon(
+                            index ==
+                                    questions[currentQuestionIndex]
+                                        .correctAnswerIndex
+                                ? Icons.check
+                                : Icons.close,
+                            color: index ==
+                                    questions[currentQuestionIndex]
+                                        .correctAnswerIndex
+                                ? Colors.green
+                                : Colors.red,
+                          )
+                        : null,
+                  );
                 },
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                if (_valueType != null) {
-                  checkAnswer();
-                }
+                checkAnswer();
               },
               child: const Text(
                 "Submit",
