@@ -23,9 +23,14 @@ class _QuizPageState extends State<QuizPage> {
 //и цвет выбранного индекса, если он совпадает с правильным - green,
 // если не совпадает - red,
 // в остальных случаях - amber
-  void checkAnswer() {
-    print('seledtedIndex = ');
-  }
+  // void checkAnswer() {
+  //   print('isAnswered = $isAnswered');
+  //   isAnswered = true;
+  //   optionColor =
+  //       _valueType == questions[currentQuestionIndex].correctAnswerIndex
+  //           ? Colors.green
+  //           : Colors.red;
+  // }
 
   int? _valueType;
   bool? _correctOption;
@@ -54,32 +59,38 @@ class _QuizPageState extends State<QuizPage> {
               child: ListView.builder(
                 itemCount: questions[currentQuestionIndex].answers.length,
                 itemBuilder: (BuildContext context, int index) {
+                  /*** RADIO ***/
                   return RadioListTile(
-                    title: Text(
-                      questions[currentQuestionIndex].answers[index],
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    value: index,
-                    groupValue: _valueType,
-                    onChanged: (val) => setState(() {
-                      _valueType = val!;
-                      //val! as int;
-                      _valueType ==
+                      title: Text(
+                        questions[currentQuestionIndex].answers[index],
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      controlAffinity: ListTileControlAffinity.trailing,
+                      value: index,
+                      groupValue: _valueType,
+                      onChanged: (val) => setState(() {
+                            _valueType = val!;
+                            //val! as int;
+                            _valueType ==
+                                    questions[currentQuestionIndex]
+                                        .correctAnswerIndex
+                                ? _correctOption = true
+                                : _correctOption = false;
+                            print(_valueType);
+                            print(_correctOption);
+                          }),
+                      activeColor: index ==
                               questions[currentQuestionIndex].correctAnswerIndex
-                          ? _correctOption = true
-                          : _correctOption = false;
-                      print(_valueType);
-                      print(_correctOption);
-                    }),
-                    activeColor: Colors.purple, //optionColors[index],
-                  );
+                          ? Colors.green
+                          : Colors.red);
                 },
               ),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => checkAnswer(),
+              onPressed: () {
+                isAnswered = true;
+              },
               child: const Text(
                 "Submit",
                 style: TextStyle(fontSize: 18),
