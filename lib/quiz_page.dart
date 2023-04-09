@@ -23,20 +23,31 @@ class _QuizPageState extends State<QuizPage> {
   String buttonName = 'SUBMIT';
 
   void checkAnswer() {
-    if (selectedOptionIndex ==
-        questions[currentQuestionIndex].correctAnswerIndex) {
-      setState(() {
+    isAnswered = !isAnswered;
+
+    setState(() {
+      if (selectedOptionIndex ==
+          questions[currentQuestionIndex].correctAnswerIndex) {
         aktiveColor = optionColors[1];
-        // isCorrectAnswerSelected = true;
-        isAnswered = true;
-      });
-    } else {
-      setState(() {
+      } else {
         aktiveColor = optionColors[0];
-        // isCorrectAnswerSelected = false;
-        isAnswered = true;
-      });
-    }
+      }
+    });
+    // if (selectedOptionIndex ==
+    //     questions[currentQuestionIndex].correctAnswerIndex) {
+    //   setState(() {
+    //     aktiveColor = optionColors[1];
+    //     // isCorrectAnswerSelected = true;
+    //     isAnswered = true;
+    //   });
+    // } else {
+    //   setState(() {
+    //     aktiveColor = optionColors[0];
+    //     // isCorrectAnswerSelected = false;
+    //     isAnswered = true;
+    //   });
+    // }
+    isAnswered ? buttonName = "NEXT" : buttonName = "SUBMIT";
     print('Radio gesperrt = $isAnswered');
   }
 
